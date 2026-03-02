@@ -1,6 +1,6 @@
 {
   "name": "@clawdbot/googlechat",
-  "version": "0.1.6",
+  "version": "0.1.7-beta.1",
   "description": "Clawdbot Google Chat channel plugin",
   "type": "module",
   "dependencies": {

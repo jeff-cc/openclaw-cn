@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.7-beta.1
+
+### Changes
+
+- Version alignment with core Clawdbot release numbers.
+
+## 0.1.7-beta.0
+
+### Changes
+
+- Version alignment with core Clawdbot release numbers.
+
 ## 0.1.6
 
 ### Changes
