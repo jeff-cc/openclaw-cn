@@ -4,7 +4,7 @@ description: "Save session context to memory when /new command is issued"
 homepage: https://docs.clawd.bot/hooks#session-memory
 metadata:
   {
-    "clawdbot":
+    "openclaw":
       {
         "emoji": "💾",
         "events": ["command:new"],

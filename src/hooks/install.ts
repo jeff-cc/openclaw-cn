@@ -24,6 +24,7 @@ type HookPackageManifest = {
   version?: string;
   dependencies?: Record<string, string>;
   openclaw?: { hooks?: string[] };
+  clawdbot?: { hooks?: string[] }; // legacy key, for backward compatibility
 };
 
 export type InstallHooksResult =
@@ -56,7 +57,8 @@ export function resolveHookInstallDir(hookId: string, hooksDir?: string): string
 }
 
 async function ensureClawdbotHooks(manifest: HookPackageManifest) {
-  const hooks = manifest.openclaw?.hooks;
+  // Support legacy "clawdbot" key for backward compatibility
+  const hooks = (manifest.openclaw ?? manifest.clawdbot)?.hooks;
   if (!Array.isArray(hooks)) {
     throw new Error("package.json missing openclaw.hooks");
   }

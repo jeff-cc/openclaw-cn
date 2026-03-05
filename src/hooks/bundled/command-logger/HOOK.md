@@ -4,7 +4,7 @@ description: "Log all command events to a centralized audit file"
 homepage: https://docs.clawd.bot/hooks#command-logger
 metadata:
   {
-    "clawdbot":
+    "openclaw":
       {
         "emoji": "📝",
         "events": ["command"],

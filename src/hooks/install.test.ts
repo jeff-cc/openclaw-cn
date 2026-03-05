@@ -37,7 +37,7 @@ describe("installHooksFromArchive", () => {
       JSON.stringify({
         name: "@clawdbot/zip-hooks",
         version: "0.0.1",
-        clawdbot: { hooks: ["./hooks/zip-hook"] },
+        openclaw: { hooks: ["./hooks/zip-hook"] },
       }),
     );
     zip.file(
@@ -46,7 +46,7 @@ describe("installHooksFromArchive", () => {
         "---",
         "name: zip-hook",
         "description: Zip hook",
-        'metadata: {"clawdbot":{"events":["command:new"]}}',
+        'metadata: {"openclaw":{"events":["command:new"]}}',
         "---",
         "",
         "# Zip Hook",
@@ -80,7 +80,7 @@ describe("installHooksFromArchive", () => {
       JSON.stringify({
         name: "@clawdbot/tar-hooks",
         version: "0.0.1",
-        clawdbot: { hooks: ["./hooks/tar-hook"] },
+        openclaw: { hooks: ["./hooks/tar-hook"] },
       }),
       "utf-8",
     );
@@ -90,7 +90,7 @@ describe("installHooksFromArchive", () => {
         "---",
         "name: tar-hook",
         "description: Tar hook",
-        'metadata: {"clawdbot":{"events":["command:new"]}}',
+        'metadata: {"openclaw":{"events":["command:new"]}}',
         "---",
         "",
         "# Tar Hook",
@@ -128,7 +128,7 @@ describe("installHooksFromPath", () => {
         "---",
         "name: my-hook",
         "description: My hook",
-        'metadata: {"clawdbot":{"events":["command:new"]}}',
+        'metadata: {"openclaw":{"events":["command:new"]}}',
         "---",
         "",
         "# My Hook",

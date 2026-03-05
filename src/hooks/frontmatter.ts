@@ -68,9 +68,12 @@ export function resolveOpenclawMetadata(
   const raw = getFrontmatterValue(frontmatter, "metadata");
   if (!raw) return undefined;
   try {
-    const parsed = JSON5.parse(raw) as { openclaw?: unknown };
+    const parsed = JSON5.parse(raw) as { openclaw?: unknown; clawdbot?: unknown };
     if (!parsed || typeof parsed !== "object") return undefined;
-    const openclaw = (parsed as { openclaw?: unknown }).openclaw;
+    // Support legacy "clawdbot" key for backward compatibility with older hooks
+    const openclaw =
+      (parsed as { openclaw?: unknown; clawdbot?: unknown }).openclaw ??
+      (parsed as { clawdbot?: unknown }).clawdbot;
     if (!openclaw || typeof openclaw !== "object") return undefined;
     const openclawObj = openclaw as Record<string, unknown>;
     const requiresRaw =
@@ -105,6 +108,9 @@ export function resolveOpenclawMetadata(
     return undefined;
   }
 }
+
+/** @deprecated Use resolveOpenclawMetadata instead */
+export const resolveClawdbotMetadata = resolveOpenclawMetadata;
 
 export function resolveHookInvocationPolicy(
   frontmatter: ParsedHookFrontmatter,

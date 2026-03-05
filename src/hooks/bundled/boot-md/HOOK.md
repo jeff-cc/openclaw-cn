@@ -4,7 +4,7 @@ description: "Run BOOT.md on gateway startup"
 homepage: https://docs.clawd.bot/hooks#boot-md
 metadata:
   {
-    "clawdbot":
+    "openclaw":
       {
         "emoji": "🚀",
         "events": ["gateway:startup"],
