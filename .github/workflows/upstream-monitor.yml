@@ -157,10 +157,22 @@ jobs:
           echo "Using AI: $AI_PROVIDER ($MODEL, max_tokens=$MAX_TOKENS)"
 
           # ---- 准备 AI 输入：只发送非 SKIP 的 commit（MERGE + OPTIONAL + REVIEW） ----
-          jq -c '[.[] | select(.action != "SKIP") | {s: .sha[:10], m: .message, a: .action, p: .priority, c: .category}]' \
-            /tmp/commits-raw.json > /tmp/ai-candidates.json
+          # message 截断到 80 字符，避免 prompt 过大
+          jq -c '[.[] | select(.action != "SKIP") | {s: .sha[:10], m: (.message | .[0:80]), a: .action, p: .priority, c: .category}]' \
+            /tmp/commits-raw.json > /tmp/ai-candidates-all.json
 
+          # 按优先级限流：MERGE+REVIEW 最多 500 条，OPTIONAL 最多 100 条（总计 ≤ 600）
+          jq -c '
+            (map(select(.a == "MERGE" or .a == "REVIEW")) | .[0:500]) as $hi |
+            (map(select(.a == "OPTIONAL")) | .[0:100]) as $lo |
+            $hi + $lo
+          ' /tmp/ai-candidates-all.json > /tmp/ai-candidates.json
+
+          TOTAL_ALL=$(jq 'length' /tmp/ai-candidates-all.json)
           CANDIDATE_COUNT=$(jq 'length' /tmp/ai-candidates.json)
+          if [ "$CANDIDATE_COUNT" -lt "$TOTAL_ALL" ]; then
+            echo "Trimmed candidates: $TOTAL_ALL → $CANDIDATE_COUNT (MERGE+REVIEW≤500, OPTIONAL≤100)"
+          fi
           echo "Sending $CANDIDATE_COUNT candidates to AI for review"
 
           # ---- 获取 Release Notes ----
