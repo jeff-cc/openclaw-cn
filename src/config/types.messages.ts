@@ -7,6 +7,11 @@ export type GroupChatConfig = {
 };
 
 export type DmConfig = {
+  /** Keyword/regex patterns to match inbound DM text for multi-agent routing.
+   * When a DM message matches an agent's dmChat.mentionPatterns, the message
+   * is routed to that agent instead of the default agent.
+   */
+  mentionPatterns?: string[];
   historyLimit?: number;
 };
 

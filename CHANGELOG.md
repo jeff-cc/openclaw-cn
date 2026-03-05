@@ -2,6 +2,12 @@
 
 Docs: https://clawd.org.cn/
 
+## 0.1.8
+
+### bug修复
+
+- **DM 多 Agent 内容路由**：新增 `agents.list[].dmChat.mentionPatterns` 配置项，支持在私信（DM）场景下通过消息关键词/正则将消息路由到指定 Agent；修复 `DmConfig` 类型缺少 `mentionPatterns` 字段导致配置无效的问题（#460）
+
 ## 0.1.7
 
 - **飞书能力增强**：新增 IM/任务/日历/表格工具与持久化命令队列恢复（#447，感谢 @dragonforce2010）

@@ -71,6 +71,7 @@ export function createWebOnMessageHandler(params: {
         kind: msg.chatType === "group" ? "group" : "dm",
         id: peerId,
       },
+      messageText: msg.chatType !== "group" ? (msg.body ?? "") : null,
     });
     const groupHistoryKey =
       msg.chatType === "group"

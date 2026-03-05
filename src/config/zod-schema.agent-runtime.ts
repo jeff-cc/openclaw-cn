@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { parseDurationMs } from "../cli/parse-duration.js";
 import {
+  DmConfigSchema,
   GroupChatSchema,
   HumanDelaySchema,
   IdentitySchema,
@@ -401,6 +402,7 @@ export const AgentEntrySchema = z
     heartbeat: HeartbeatSchema,
     identity: IdentitySchema,
     groupChat: GroupChatSchema,
+    dmChat: DmConfigSchema.optional(),
     subagents: z
       .object({
         allowAgents: z.array(z.string()).optional(),

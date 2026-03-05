@@ -1,6 +1,6 @@
 import type { AgentDefaultsConfig } from "./types.agent-defaults.js";
 import type { HumanDelayConfig, IdentityConfig } from "./types.base.js";
-import type { GroupChatConfig } from "./types.messages.js";
+import type { DmConfig, GroupChatConfig } from "./types.messages.js";
 import type {
   SandboxBrowserSettings,
   SandboxDockerSettings,
@@ -33,6 +33,7 @@ export type AgentConfig = {
   heartbeat?: AgentDefaultsConfig["heartbeat"];
   identity?: IdentityConfig;
   groupChat?: GroupChatConfig;
+  dmChat?: DmConfig;
   subagents?: {
     /** Allow spawning sub-agents under other agent ids. Use "*" to allow any. */
     allowAgents?: string[];

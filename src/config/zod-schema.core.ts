@@ -92,6 +92,8 @@ export const GroupChatSchema = z
 
 export const DmConfigSchema = z
   .object({
+    /** Keyword/regex patterns for content-based DM multi-agent routing. */
+    mentionPatterns: z.array(z.string()).optional(),
     historyLimit: z.number().int().min(0).optional(),
   })
   .strict();

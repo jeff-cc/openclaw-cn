@@ -26,6 +26,12 @@ export type ResolveAgentRouteInput = {
   parentPeer?: RoutePeer | null;
   guildId?: string | null;
   teamId?: string | null;
+  /**
+   * Raw inbound message text. Used for content-based DM multi-agent routing:
+   * when a DM has no binding match, the agent whose dmChat.mentionPatterns
+   * matches this text is selected instead of the default agent.
+   */
+  messageText?: string | null;
 };
 
 export type ResolvedAgentRoute = {
@@ -44,6 +50,7 @@ export type ResolvedAgentRoute = {
     | "binding.team"
     | "binding.account"
     | "binding.channel"
+    | "dm.mention"
     | "default";
 };
 
@@ -51,6 +58,32 @@ export { DEFAULT_ACCOUNT_ID, DEFAULT_AGENT_ID } from "./session-key.js";
 
 function normalizeToken(value: string | undefined | null): string {
   return (value ?? "").trim().toLowerCase();
+}
+
+/** Normalize and lowercase unicode-invisible chars for DM pattern matching. */
+function normalizeDmText(text: string): string {
+  return (text ?? "").replace(/[\u200b-\u200f\u202a-\u202e\u2060-\u206f]/g, "").toLowerCase();
+}
+
+/** Returns the first agentId whose dmChat.mentionPatterns matches the text, or null. */
+function resolveAgentByDmContent(cfg: ClawdbotConfig, text: string): string | null {
+  const cleaned = normalizeDmText(text);
+  if (!cleaned) return null;
+  const agents = listAgents(cfg);
+  for (const agent of agents) {
+    const patterns = agent?.dmChat?.mentionPatterns;
+    if (!Array.isArray(patterns) || patterns.length === 0) continue;
+    const matched = patterns.some((pattern) => {
+      if (!pattern) return false;
+      try {
+        return new RegExp(pattern, "i").test(cleaned);
+      } catch {
+        return false;
+      }
+    });
+    if (matched && agent?.id?.trim()) return agent.id.trim();
+  }
+  return null;
 }
 
 function normalizeId(value: string | undefined | null): string {
@@ -252,6 +285,16 @@ export function resolveAgentRoute(input: ResolveAgentRouteInput): ResolvedAgentR
   );
   if (anyAccountMatch) {
     return choose(anyAccountMatch.agentId, "binding.channel");
+  }
+
+  // Content-based DM routing: if this is a DM and messageText was provided,
+  // check each agent's dmChat.mentionPatterns for a match before falling back to default.
+  const isDm = peer?.kind === "dm" || peer?.kind === "direct";
+  if (isDm && input.messageText) {
+    const dmAgentId = resolveAgentByDmContent(input.cfg, input.messageText);
+    if (dmAgentId) {
+      return choose(dmAgentId, "dm.mention");
+    }
   }
 
   return choose(resolveDefaultAgentId(input.cfg), "default");

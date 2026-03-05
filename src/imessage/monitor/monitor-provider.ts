@@ -313,6 +313,7 @@ export async function monitorIMessageProvider(opts: MonitorIMessageOpts = {}): P
       }
     }
 
+    const messageText = (message.text ?? "").trim();
     const route = resolveAgentRoute({
       cfg,
       channel: "imessage",
@@ -321,9 +322,9 @@ export async function monitorIMessageProvider(opts: MonitorIMessageOpts = {}): P
         kind: isGroup ? "group" : "dm",
         id: isGroup ? String(chatId ?? "unknown") : normalizeIMessageHandle(sender),
       },
+      messageText: !isGroup ? messageText : null,
     });
     const mentionRegexes = buildMentionRegexes(cfg, route.agentId);
-    const messageText = (message.text ?? "").trim();
     const attachments = includeAttachments ? (message.attachments ?? []) : [];
     // Filter to valid attachments with paths
     const validAttachments = attachments.filter((entry) => entry?.original_path && !entry?.missing);

@@ -529,6 +529,7 @@ export function createSignalEventHandler(deps: SignalEventHandlerDeps) {
         kind: isGroup ? "group" : "direct",
         id: isGroup ? (groupId ?? "unknown") : senderPeerId,
       },
+      messageText: !isGroup ? messageText : null,
     });
     const mentionRegexes = buildMentionRegexes(deps.cfg, route.agentId);
     const wasMentioned = isGroup && matchesMentionPatterns(messageText, mentionRegexes);
