@@ -237,6 +237,16 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* Inline mode toggle in action bar (always visible, including on mobile) */
+.config-mode-toggle--inline {
+  flex-shrink: 0;
+}
+
+.config-mode-toggle--inline .config-mode-toggle__btn {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
 /* ===========================================
    Main Content
    =========================================== */

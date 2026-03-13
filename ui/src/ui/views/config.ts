@@ -325,6 +325,21 @@ export function renderConfig(props: ConfigProps) {
         <!-- Action bar -->
         <div class="config-actions">
           <div class="config-actions__left">
+            <div class="config-mode-toggle config-mode-toggle--inline">
+              <button
+                class="config-mode-toggle__btn ${props.formMode === "form" ? "active" : ""}"
+                ?disabled=${props.schemaLoading || !props.schema}
+                @click=${() => props.onFormModeChange("form")}
+              >
+                表单
+              </button>
+              <button
+                class="config-mode-toggle__btn ${props.formMode === "raw" ? "active" : ""}"
+                @click=${() => props.onFormModeChange("raw")}
+              >
+                原始
+              </button>
+            </div>
             ${hasChanges ? html`
               <span class="config-changes-badge">${props.formMode === "raw" ? "未保存的更改" : `${diff.length} 个未保存的更改`}</span>
             ` : html`

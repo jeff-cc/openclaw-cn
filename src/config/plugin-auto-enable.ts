@@ -28,6 +28,11 @@ const CHANNEL_PLUGIN_IDS = Array.from(
   ]),
 );
 
+/** channel id -> plugin id 映射（当插件 id 与 channel id 不同时，如 wecom 由 wecom-openclaw-plugin 提供） */
+const CHANNEL_TO_PLUGIN_ID: Record<string, string> = {
+  wecom: "wecom-openclaw-plugin",
+};
+
 const PROVIDER_PLUGIN_IDS: Array<{ pluginId: string; providerId: string }> = [
   { pluginId: "google-antigravity-auth", providerId: "google-antigravity" },
   { pluginId: "google-gemini-cli-auth", providerId: "google-gemini-cli" },
@@ -253,8 +258,9 @@ function resolveConfiguredPlugins(
   for (const channelId of channelIds) {
     if (!channelId) continue;
     if (isChannelConfigured(cfg, channelId, env)) {
+      const pluginId = CHANNEL_TO_PLUGIN_ID[channelId] ?? channelId;
       changes.push({
-        pluginId: channelId,
+        pluginId,
         reason: `${channelId} configured`,
       });
     }

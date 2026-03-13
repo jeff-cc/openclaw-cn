@@ -225,23 +225,22 @@ export function createPluginRuntime(): PluginRuntime {
       },
       pairing: {
         buildPairingReply,
-        // Official plugins call readAllowFromStore({ channel, accountId? }) — an object.
-        // The underlying readChannelAllowFromStore signature is (channel, env, accountId?)
-        // so we wrap it here to accept the object form used by extension plugins.
-        readAllowFromStore: ({
-          channel,
-          accountId,
-          env,
-        }: {
-          channel: string;
-          accountId?: string;
-          env?: NodeJS.ProcessEnv;
-        }) =>
-          readChannelAllowFromStore(
+        // 兼容两种调用方式：readAllowFromStore("feishu") 或 readAllowFromStore({ channel, accountId? })
+        readAllowFromStore: (
+          arg: string | { channel: string; accountId?: string; env?: NodeJS.ProcessEnv },
+        ) => {
+          const channel =
+            typeof arg === "string" ? arg : (arg && typeof arg === "object" ? arg.channel : undefined);
+          const accountId =
+            typeof arg === "object" && arg && "accountId" in arg ? arg.accountId : undefined;
+          const env =
+            typeof arg === "object" && arg && "env" in arg ? arg.env : process.env;
+          return readChannelAllowFromStore(
             channel as Parameters<typeof readChannelAllowFromStore>[0],
             env ?? process.env,
             accountId,
-          ),
+          );
+        },
         upsertPairingRequest: upsertChannelPairingRequest,
       },
       media: {

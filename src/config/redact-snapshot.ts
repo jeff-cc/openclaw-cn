@@ -96,14 +96,27 @@ function collectSensitiveValues(obj: unknown): string[] {
 /**
  * Replace known sensitive values in a raw JSON5 string with the sentinel.
  * Values are replaced longest-first to avoid partial matches.
+ * Skips replacement when:
+ * - Match is inside a ${VAR} env placeholder (avoids corrupting ${WECOM_BOT_ID} when secret contains "BOT")
+ * - Match is inside a path-like string (avoids corrupting /app/node_modules/... when secret contains "node_" etc.)
  */
 function redactRawText(raw: string, config: unknown): string {
-  const sensitiveValues = collectSensitiveValues(config);
-  sensitiveValues.sort((a, b) => b.length - a.length);
+  const sensitiveValues = collectSensitiveValues(config)
+    .filter((v) => v.length >= 10) // 过短的敏感值易误伤路径等，仅替换长度>=10的
+    .sort((a, b) => b.length - a.length);
   let result = raw;
   for (const value of sensitiveValues) {
     const escaped = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    result = result.replace(new RegExp(escaped, "g"), REDACTED_SENTINEL);
+    result = result.replace(new RegExp(escaped, "g"), (match: string, offset: number, fullString: string) => {
+      const before = fullString.substring(0, offset);
+      const lastDollar = before.lastIndexOf("${");
+      const lastClose = before.lastIndexOf("}");
+      if (lastDollar > lastClose) return match;
+      // 若匹配位于路径中（如 /app/node_modules/...）则跳过，避免误伤
+      const context = fullString.substring(Math.max(0, offset - 20), offset + match.length + 20);
+      if (/[/\\]|node_modules|extensions[/\\]/.test(context)) return match;
+      return REDACTED_SENTINEL;
+    });
   }
 
   const keyValuePattern =
